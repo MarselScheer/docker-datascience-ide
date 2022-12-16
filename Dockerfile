@@ -1,4 +1,11 @@
-FROM nvidia/cuda:12.0.0-runtime-ubuntu22.04
+FROM nvidia/cuda:11.7.1-devel-ubuntu20.04
+# use nvidia/cuda:11.7.1-devel-ubuntu20.04 because
+# 1. pytorch uses cuda 11.7
+# 2. cudf pip installation is only available for
+#    ubuntu20 and python 3.8 or 3.9
+# 3. cudf needs /usr/local/cuda/nvmm which is preinstalled
+#    in the devel-image
+ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get update && apt-get install -y \
     software-properties-common \
     && apt-get install -y \
@@ -18,6 +25,8 @@ RUN apt-get update && apt-get install -y \
     libsm-dev libjansson4 libncurses5 libgccjit0 \
     librsvg2-2 libjpeg9 libtiff5 libgif7 libpng16-16 \
     libgtk-3-0 libharfbuzz0b libxpm4 \
+    && pip install --upgrade pip \
+    && ln -s /usr/bin/python3 /usr/bin/python \
     # emacs
     && wget https://github.com/emacs-ng/emacs-ng/releases/download/v0.0.d5c8bdf/emacs-ng_0.0.d5c8bdf_amd64.deb \
     && dpkg -i emacs-ng_0.0.d5c8bdf_amd64.deb \
